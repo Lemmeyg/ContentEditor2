@@ -1,9 +1,20 @@
 import OpenAI from 'openai'
 import { ContentPhase } from '@/types'
 
+// Validate API key format
+const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY
+if (!apiKey) {
+  throw new Error('NEXT_PUBLIC_OPENAI_API_KEY is not defined in environment variables')
+}
+if (!apiKey.startsWith('sk-')) {
+  throw new Error('Invalid API key format. OpenAI API keys should start with "sk-"')
+}
+
+// Initialize the OpenAI client with required configuration
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: apiKey,
   dangerouslyAllowBrowser: true, // Only for development
+  baseURL: 'https://api.openai.com/v1', // Explicitly set the base URL
 })
 
 export const ASSISTANT_INSTRUCTIONS = `
@@ -49,4 +60,4 @@ export const PHASE_PROMPTS = {
   [ContentPhase.CONTENT]: "Time to create the content. I'll help you write and refine each section.",
   [ContentPhase.CONCLUSION]: "Let's craft a strong ending. What action do you want your readers to take?",
   [ContentPhase.REVIEW]: "Let's review and polish your content. I'll help you check for clarity, coherence, and impact.",
-} 
+}
